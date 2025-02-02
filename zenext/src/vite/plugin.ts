@@ -1,18 +1,22 @@
 import { invokeMap } from 'lodash-es'
 import type { Plugin } from 'vite'
-import { createManifestProcessor, createPageProcessor } from './processors'
+import { type PageConfig, createManifestProcessor, createPageProcessor } from './processors'
 import type { Manifest, ManifestFn, Processor } from './types'
 
 export type ZenExtOptions = {
   manifest: Manifest | ManifestFn
 }
 
-export async function zenExt(_: ZenExtOptions): Promise<Plugin> {
-  // let root: string
-  const pages = createPageProcessor()
-  const manifest = createManifestProcessor(pages)
+export type PluginState = {
+  pages: PageConfig[]
+}
 
-  const processors: Processor[] = [manifest, pages]
+export async function zenExt(_: ZenExtOptions): Promise<Plugin> {
+  const state: PluginState = {
+    pages: [],
+  }
+
+  const processors: Processor[] = [createManifestProcessor(state), createPageProcessor(state)]
 
   return {
     name: 'zen-ext',
@@ -82,56 +86,4 @@ export async function zenExt(_: ZenExtOptions): Promise<Plugin> {
     //   }
     // },
   }
-
-  // async function generateManifest(file: string) {
-  //   try {
-  //     const result = await build({
-  //       root,
-  //       mode: 'development',
-  //       build: {
-  //         lib: {
-  //           entry: file,
-  //           formats: ['cjs'],
-  //         },
-  //         rollupOptions: {
-  //           output: {
-  //             dir: dirname(file),
-  //             entryFileNames: 'manifest.config.js',
-  //           },
-  //         },
-  //         // write: false,
-  //       },
-  //     })
-
-  //     const output = result.output[0].code
-  //     console.log('output:', output)
-
-  //     // const manifestModule = new Function(
-  //     //   'exports',
-  //     //   'require',
-  //     //   'module',
-  //     //   '__filename',
-  //     //   '__dirname',
-  //     //   output,
-  //     // )
-  //     // const exports = {}
-  //     // manifestModule(exports, require, { exports }, file, dirname(file))
-
-  //     // const manifest = await exports.default({ mode: process.env.NODE_ENV || 'development' })
-  //     // const manifestJson = JSON.stringify(manifest, null, 2)
-
-  //     // const manifestJsonPath = resolve(dirname(file), 'manifest.json')
-  //     // await fs.writeFile(manifestJsonPath, manifestJson, 'utf-8')
-  //     // console.log('Manifest generated:', manifestJsonPath)
-  //   } catch (error) {
-  //     console.error('Failed to generate manifest:', error)
-  //   }
-  // }
-
-  // async function handleFileChange(file: string) {
-  //   if (file.endsWith('manifest.config.ts')) {
-  //     console.log('file changed:', file)
-  //     await generateManifest(file)
-  //   }
-  // }
 }

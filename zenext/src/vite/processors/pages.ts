@@ -1,6 +1,7 @@
 import fs from 'node:fs/promises'
-import { chain, isArray, map, merge } from 'lodash-es'
+import { isArray, map, merge } from 'lodash-es'
 import type { UserConfig } from 'vite'
+import type { PluginState } from '../plugin'
 import type { Manifest, Processor } from '../types'
 import { assert } from '../utils'
 
@@ -10,10 +11,6 @@ export type PageConfig = {
   name: PageName
   file: string
   manifestEntries: Partial<Manifest>[]
-}
-
-export type PagesProcessor = Processor & {
-  getManifestPatch(): Partial<Manifest>
 }
 
 const PAGE_CONFIGS: PageConfig[] = [
@@ -45,15 +42,14 @@ const PAGE_CONFIGS: PageConfig[] = [
 
 const PAGE_REGEX = new RegExp(`src/pages/(${map(PAGE_CONFIGS, 'name').join('|')})/index.ts$`)
 
-export function createPageProcessor(): PagesProcessor {
-  let activePages: PageConfig[] = []
-
+export function createPageProcessor(state: PluginState): Processor {
   return {
     async config(config) {
-      activePages = await Promise.all(
+      state.pages = await Promise.all(
         PAGE_CONFIGS.map(async page => ((await pageExists(page)) ? page : undefined)),
       ).then(pages => pages.filter(Boolean) as PageConfig[])
-      return activePages.reduce(addPageEntrypoint, config)
+
+      return state.pages.reduce(addPageEntrypoint, config)
     },
 
     configureServer(server) {
@@ -68,10 +64,6 @@ export function createPageProcessor(): PagesProcessor {
           server.restart()
         }
       })
-    },
-
-    getManifestPatch(): Partial<Manifest> {
-      return chain(activePages).map('manifestEntries').flatten().reduce(merge, {}).value()
     },
   }
 }
