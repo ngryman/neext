@@ -25,7 +25,8 @@
     "lodash-es": "^4.17.21"
   },
   "peerDependencies": {
-    "@types/chrome": "^0.0.300"
+    "@types/chrome": "^0.0.300",
+    "vite": "^6.0.11"
   },
   "devDependencies": {
     "@types/lodash-es": "^4.17.12",
