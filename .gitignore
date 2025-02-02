@@ -1,0 +1,8 @@
+.local/
+.DS_Store
+.env*
+.todo
+dist/
+node_modules/
+target/
+tests/downloads/

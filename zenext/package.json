@@ -1,0 +1,35 @@
+{
+  "private": true,
+  "name": "zenext",
+  "version": "0.0.0",
+  "type": "module",
+  "sideEffects": false,
+  "scripts": {
+    "build": "tsup-node",
+    "dev": "tsup-node --watch"
+  },
+  "files": [
+    "dist/"
+  ],
+  "exports": {
+    ".": {
+      "import": "./dist/framework.js",
+      "types": "./dist/framework.d.ts"
+    },
+    "./vite": {
+      "import": "./dist/vite.js",
+      "types": "./dist/vite.d.ts"
+    }
+  },
+  "dependencies": {
+    "lodash-es": "^4.17.21"
+  },
+  "peerDependencies": {
+    "@types/chrome": "^0.0.300"
+  },
+  "devDependencies": {
+    "@types/lodash-es": "^4.17.12",
+    "tsup": "^8.3.6",
+    "vite": "^6.0.11"
+  }
+}

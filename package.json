@@ -1,0 +1,12 @@
+{
+  "private": true,
+  "name": "getsheetdone",
+  "workspaces": [
+    "app",
+    "zenext"
+  ],
+  "devDependencies": {
+    "@biomejs/biome": "^1.9.4",
+    "typescript": "^5.0.0"
+  }
+}
