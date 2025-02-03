@@ -4,17 +4,19 @@ import { isObject } from 'lodash-es'
 import type { ResolvedConfig } from 'vite'
 import type { Manifest } from './types'
 
+export type ManifestPatch = Partial<Manifest>
+
 export type PageName = 'side-panel'
 
 export type PageConfig = {
   name: PageName
   file: string
-  manifestEntries: Partial<Manifest>[]
+  manifestPatch: ManifestPatch[]
 }
 
 export class PluginContext {
-  public pages: PageConfig[] = []
   public config!: ResolvedConfig
+  public manifestPatches: ManifestPatch[] = []
 
   // biome-ignore lint/suspicious/noExplicitAny: This accepts any type of object
   public async emitFile<T extends string | Record<string, any>>(
@@ -29,7 +31,3 @@ export class PluginContext {
     )
   }
 }
-
-// export async function emitFile(file: string, content: string): void {
-//   await fs.writeFile(path.join(outDir, 'manifest.json'), JSON.stringify(manifest, null, 2), 'utf-8')
-// }

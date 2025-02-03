@@ -1,3 +1,5 @@
+import type { Plugin } from 'vite'
+
 const config = {
   name: 'background',
   file: 'background/index.ts',
@@ -9,4 +11,10 @@ const config = {
       },
     },
   ],
+}
+
+export function background(): Plugin {
+  return {
+    name: 'zenext:background',
+  }
 }

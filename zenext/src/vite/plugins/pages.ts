@@ -8,7 +8,7 @@ const PAGE_CONFIGS: PageConfig[] = [
   {
     name: 'side-panel',
     file: 'pages/side-panel/index.ts',
-    manifestEntries: [
+    manifestPatch: [
       {
         permissions: ['sidePanel'],
         side_panel: {
@@ -22,24 +22,47 @@ const PAGE_CONFIGS: PageConfig[] = [
 const PAGE_REGEX = new RegExp(`pages/(${map(PAGE_CONFIGS, 'name').join('|')})/index.ts$`)
 
 export function pages(context: PluginContext): Plugin {
+  const activePages: PageConfig[] = []
+  let baseUrl!: string
+
   return {
     name: 'zen-ext:pages',
     async config(config) {
       await Promise.all(
         PAGE_CONFIGS.map(async page => {
           if (await pageExists(page)) {
-            context.pages.push(page)
+            activePages.push(page)
+            context.manifestPatches.push(...page.manifestPatch)
           }
         }),
       )
 
-      return context.pages.reduce(addPageEntrypoint, config)
+      return activePages.reduce(addPageEntrypoint, config)
+    },
+
+    configResolved(config) {
+      baseUrl = `http://${config.server.host ?? 'localhost'}:${config.server.port}/pages`
     },
 
     async buildStart() {
       await Promise.all(
-        context.pages.map(async page => {
-          await context.emitFile(`${page.name}.js`, `console.log('${page.name}')`)
+        activePages.map(async page => {
+          await Promise.all([
+            context.emitFile(
+              `${page.name}.html`,
+              `<script src="${baseUrl}/${page.name}/index.ts" type="module"></script>`,
+            ),
+            context.emitFile(
+              `${page.name}.js`,
+              `
+              import '${page.file}'
+
+              document.__hot.accept(() => {
+                document.__hot.invalidate()
+              })
+            `,
+            ),
+          ])
         }),
       )
     },
