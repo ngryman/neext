@@ -1,34 +1,13 @@
 import fs from 'node:fs/promises'
 import { isArray, map, merge } from 'lodash-es'
-import type { UserConfig } from 'vite'
-import type { PluginState } from '../plugin'
-import type { Manifest, Processor } from '../types'
+import type { Plugin, UserConfig } from 'vite'
+import type { PageConfig, PluginContext } from '../context'
 import { assert } from '../utils'
-
-export type PageName = 'background' | 'side-panel'
-
-export type PageConfig = {
-  name: PageName
-  file: string
-  manifestEntries: Partial<Manifest>[]
-}
 
 const PAGE_CONFIGS: PageConfig[] = [
   {
-    name: 'background',
-    file: 'src/pages/background/index.ts',
-    manifestEntries: [
-      {
-        background: {
-          type: 'module',
-          service_worker: 'background.js',
-        },
-      },
-    ],
-  },
-  {
     name: 'side-panel',
-    file: 'src/pages/side-panel/index.ts',
+    file: 'pages/side-panel/index.ts',
     manifestEntries: [
       {
         permissions: ['sidePanel'],
@@ -40,16 +19,29 @@ const PAGE_CONFIGS: PageConfig[] = [
   },
 ] as const
 
-const PAGE_REGEX = new RegExp(`src/pages/(${map(PAGE_CONFIGS, 'name').join('|')})/index.ts$`)
+const PAGE_REGEX = new RegExp(`pages/(${map(PAGE_CONFIGS, 'name').join('|')})/index.ts$`)
 
-export function createPageProcessor(state: PluginState): Processor {
+export function pages(context: PluginContext): Plugin {
   return {
+    name: 'zen-ext:pages',
     async config(config) {
-      state.pages = await Promise.all(
-        PAGE_CONFIGS.map(async page => ((await pageExists(page)) ? page : undefined)),
-      ).then(pages => pages.filter(Boolean) as PageConfig[])
+      await Promise.all(
+        PAGE_CONFIGS.map(async page => {
+          if (await pageExists(page)) {
+            context.pages.push(page)
+          }
+        }),
+      )
 
-      return state.pages.reduce(addPageEntrypoint, config)
+      return context.pages.reduce(addPageEntrypoint, config)
+    },
+
+    async buildStart() {
+      await Promise.all(
+        context.pages.map(async page => {
+          await context.emitFile(`${page.name}.js`, `console.log('${page.name}')`)
+        }),
+      )
     },
 
     configureServer(server) {
@@ -77,7 +69,7 @@ async function pageExists({ file }: PageConfig): Promise<boolean> {
   }
 }
 
-function addPageEntrypoint(config: UserConfig, { name, file: path }: PageConfig): UserConfig {
+function addPageEntrypoint(config: UserConfig, { name, file }: PageConfig): UserConfig {
   const prevInput = (config.build?.rollupOptions?.input ?? {}) as Record<string, string>
   assert(!isArray(prevInput), 'Expected `build.rollupOptions.input` to be an object or undefined.')
 
@@ -86,7 +78,7 @@ function addPageEntrypoint(config: UserConfig, { name, file: path }: PageConfig)
       rollupOptions: {
         input: {
           ...prevInput,
-          [name]: `src/pages/${path}/index.ts`,
+          [name]: file,
         },
       },
     },

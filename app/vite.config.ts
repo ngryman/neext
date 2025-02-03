@@ -3,11 +3,10 @@ import { resolve } from 'node:path'
 import { defineConfig } from 'vite'
 import solid from 'vite-plugin-solid'
 import { zenExt } from 'zenext/vite'
-import { manifest } from './manifest.config'
 import { version } from './package.json'
 
 export default defineConfig({
-  plugins: [solid(), zenExt({ manifest })],
+  plugins: [solid(), zenExt()],
   build: {
     target: 'esnext',
     emptyOutDir: true,

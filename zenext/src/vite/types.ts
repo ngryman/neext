@@ -1,5 +1,3 @@
-import type { Plugin } from 'vite'
-
 export type ManifestFn = (options: { mode: 'production' | 'development' | string }) =>
   | Manifest
   | Promise<Manifest>
@@ -195,5 +193,3 @@ export type WebAccessibleResourceByMatch = {
   resources: string[]
   use_dynamic_url?: boolean
 }
-
-export type Processor = Omit<Plugin, 'name'>
