@@ -8,7 +8,8 @@
     "build": "vite build"
   },
   "dependencies": {
-    "lodash-es": "^4.17.21"
+    "lodash-es": "^4.17.21",
+    "solid-js": "^1.9.4"
   },
   "devDependencies": {
     "@types/chrome": "^0.0.300",

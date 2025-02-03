@@ -1,13 +1,23 @@
 import fs from 'node:fs/promises'
 import { isArray, map, merge } from 'lodash-es'
 import type { Plugin, UserConfig } from 'vite'
-import type { PageConfig, PluginContext } from '../context'
+import type { ManifestPatch, PluginContext } from '../context'
 import { assert } from '../utils'
 
-const PAGE_CONFIGS: PageConfig[] = [
+type PageName = 'side-panel'
+
+type PageDefinition = {
+  name: PageName
+  manifestPatch: ManifestPatch[]
+}
+
+type PageState = PageDefinition & {
+  file: string
+}
+
+const PAGE_DEFINITIONS: PageDefinition[] = [
   {
     name: 'side-panel',
-    file: 'pages/side-panel/index.ts',
     manifestPatch: [
       {
         permissions: ['sidePanel'],
@@ -19,19 +29,20 @@ const PAGE_CONFIGS: PageConfig[] = [
   },
 ] as const
 
-const PAGE_REGEX = new RegExp(`pages/(${map(PAGE_CONFIGS, 'name').join('|')})/index.ts$`)
+const PAGE_REGEX = new RegExp(`pages/(${map(PAGE_DEFINITIONS, 'name').join('|')})/index.tsx?$`)
 
 export function pages(context: PluginContext): Plugin {
-  const activePages: PageConfig[] = []
+  const activePages: PageState[] = []
   let baseUrl!: string
 
   return {
     name: 'zen-ext:pages',
     async config(config) {
       await Promise.all(
-        PAGE_CONFIGS.map(async page => {
-          if (await pageExists(page)) {
-            activePages.push(page)
+        PAGE_DEFINITIONS.map(async page => {
+          const file = await detectPage(page)
+          if (file) {
+            activePages.push({ ...page, file })
             context.manifestPatches.push(...page.manifestPatch)
           }
         }),
@@ -41,7 +52,7 @@ export function pages(context: PluginContext): Plugin {
     },
 
     configResolved(config) {
-      baseUrl = `http://${config.server.host ?? 'localhost'}:${config.server.port}/pages`
+      baseUrl = `http://${config.server.host ?? 'localhost'}:${config.server.port}`
     },
 
     async buildStart() {
@@ -50,18 +61,9 @@ export function pages(context: PluginContext): Plugin {
           await Promise.all([
             context.emitFile(
               `${page.name}.html`,
-              `<script src="${baseUrl}/${page.name}/index.ts" type="module"></script>`,
+              `<script src="${baseUrl}/${page.file}" type="module"></script>`,
             ),
-            context.emitFile(
-              `${page.name}.js`,
-              `
-              import '${page.file}'
-
-              document.__hot.accept(() => {
-                document.__hot.invalidate()
-              })
-            `,
-            ),
+            context.emitFile(`${page.name}.js`, `import '${page.file}'`),
           ])
         }),
       )
@@ -83,16 +85,18 @@ export function pages(context: PluginContext): Plugin {
   }
 }
 
-async function pageExists({ file }: PageConfig): Promise<boolean> {
-  try {
-    await fs.access(file)
-    return true
-  } catch {
-    return false
+async function detectPage({ name }: PageDefinition): Promise<string | undefined> {
+  const files = [`pages/${name}/index.ts`, `pages/${name}/index.tsx`]
+  for (const file of files) {
+    try {
+      await fs.access(file)
+      return file
+    } catch {}
   }
+  return undefined
 }
 
-function addPageEntrypoint(config: UserConfig, { name, file }: PageConfig): UserConfig {
+function addPageEntrypoint(config: UserConfig, { name, file }: PageState): UserConfig {
   const prevInput = (config.build?.rollupOptions?.input ?? {}) as Record<string, string>
   assert(!isArray(prevInput), 'Expected `build.rollupOptions.input` to be an object or undefined.')
 

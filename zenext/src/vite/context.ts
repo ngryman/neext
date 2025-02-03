@@ -6,14 +6,6 @@ import type { Manifest } from './types'
 
 export type ManifestPatch = Partial<Manifest>
 
-export type PageName = 'side-panel'
-
-export type PageConfig = {
-  name: PageName
-  file: string
-  manifestPatch: ManifestPatch[]
-}
-
 export class PluginContext {
   public config!: ResolvedConfig
   public manifestPatches: ManifestPatch[] = []
