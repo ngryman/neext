@@ -29,7 +29,7 @@ const PAGE_DEFINITIONS: PageDefinition[] = [
   },
 ] as const
 
-const PAGE_REGEX = new RegExp(`pages/(${map(PAGE_DEFINITIONS, 'name').join('|')})/index.tsx?$`)
+const PAGE_REGEX = new RegExp(`(${map(PAGE_DEFINITIONS, 'name').join('|')})/index.tsx?$`)
 
 export function pages(context: PluginContext): Plugin {
   const activePages: PageState[] = []
@@ -90,7 +90,7 @@ export function pages(context: PluginContext): Plugin {
 }
 
 async function detectPage({ name }: PageDefinition): Promise<string | undefined> {
-  const files = [`pages/${name}/index.ts`, `pages/${name}/index.tsx`]
+  const files = [`${name}/index.ts`, `${name}/index.tsx`]
   for (const file of files) {
     try {
       await fs.access(file)
