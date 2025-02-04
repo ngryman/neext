@@ -7,7 +7,7 @@ export default defineConfig({
   minify: true,
   dts: true,
   entry: {
+    runtime: 'src/runtime/index.ts',
     vite: 'src/vite/index.ts',
-    framework: 'src/framework/index.ts',
   },
 })

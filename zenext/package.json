@@ -12,9 +12,9 @@
     "dist/"
   ],
   "exports": {
-    ".": {
-      "import": "./dist/framework.js",
-      "types": "./dist/framework.d.ts"
+    "./runtime": {
+      "import": "./dist/runtime.js",
+      "types": "./dist/runtime.d.ts"
     },
     "./vite": {
       "import": "./dist/vite.js",
@@ -22,6 +22,7 @@
     }
   },
   "dependencies": {
+    "@babel/preset-typescript": "^7.26.0",
     "lodash-es": "^4.17.21"
   },
   "peerDependencies": {

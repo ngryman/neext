@@ -1,8 +1,8 @@
 import fs from 'node:fs/promises'
-import { isArray, map, merge } from 'lodash-es'
-import type { Plugin, UserConfig } from 'vite'
+import { map } from 'lodash-es'
+import type { Plugin } from 'vite'
 import type { ManifestPatch, PluginContext } from '../context'
-import { assert } from '../utils'
+import { addPageEntrypoint } from '../utils'
 
 type PageName = 'side-panel'
 
@@ -37,6 +37,7 @@ export function pages(context: PluginContext): Plugin {
 
   return {
     name: 'zen-ext:pages',
+
     async config(config) {
       await Promise.all(
         PAGE_DEFINITIONS.map(async page => {
@@ -48,7 +49,10 @@ export function pages(context: PluginContext): Plugin {
         }),
       )
 
-      return activePages.reduce(addPageEntrypoint, config)
+      return activePages.reduce(
+        (config, page) => addPageEntrypoint(config, page.name, page.file),
+        config,
+      )
     },
 
     configResolved(config) {
@@ -94,22 +98,6 @@ async function detectPage({ name }: PageDefinition): Promise<string | undefined>
     } catch {}
   }
   return undefined
-}
-
-function addPageEntrypoint(config: UserConfig, { name, file }: PageState): UserConfig {
-  const prevInput = (config.build?.rollupOptions?.input ?? {}) as Record<string, string>
-  assert(!isArray(prevInput), 'Expected `build.rollupOptions.input` to be an object or undefined.')
-
-  return merge(config, {
-    build: {
-      rollupOptions: {
-        input: {
-          ...prevInput,
-          [name]: file,
-        },
-      },
-    },
-  })
 }
 
 function isFilePage(file: string): boolean {

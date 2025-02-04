@@ -1,11 +1,19 @@
-export function assert(condition: unknown, message: string): asserts condition {
-  const passes = Boolean(condition)
+import { isArray, merge } from 'lodash-es'
+import type { UserConfig } from 'vite'
+import { assert } from '../utils'
 
-  const isProd = import.meta.env?.PROD ?? process?.env.NODE_ENV === 'production'
+export function addPageEntrypoint(config: UserConfig, name: string, file: string): UserConfig {
+  const prevInput = (config.build?.rollupOptions?.input ?? {}) as Record<string, string>
+  assert(!isArray(prevInput), 'Expected `build.rollupOptions.input` to be an object or undefined.')
 
-  if (!isProd && !passes) {
-    throw new Error(`Assert: ${message}`)
-  } else {
-    console.assert(Boolean(condition), 'Assert:', message, new Error().stack?.replace('Error', ''))
-  }
+  return merge(config, {
+    build: {
+      rollupOptions: {
+        input: {
+          ...prevInput,
+          [name]: file,
+        },
+      },
+    },
+  })
 }
