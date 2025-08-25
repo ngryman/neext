@@ -1,3 +1,4 @@
+import { access } from 'node:fs/promises'
 import { transformAsync } from '@babel/core'
 import type { Visitor } from '@babel/traverse'
 import * as t from '@babel/types'
@@ -14,13 +15,19 @@ const manifestPatch: ManifestPatch = {
 
 export function background(context: PluginContext): Plugin {
   let baseUrl!: string
+  let backgroundEntry: string | undefined
 
   return {
     name: 'zenext:background',
 
-    config(config) {
-      context.manifestPatches.push(manifestPatch)
-      return addPageEntrypoint(config, 'background', 'background/index.ts')
+    async config(config) {
+      backgroundEntry = await detectBackground()
+      if (backgroundEntry) {
+        context.manifestPatches.push(manifestPatch)
+        return addPageEntrypoint(config, 'background', backgroundEntry)
+      }
+
+      return config
     },
 
     configResolved(config) {
@@ -38,11 +45,13 @@ export function background(context: PluginContext): Plugin {
     // },
 
     async buildStart() {
-      await context.emitFile('background.js', `import '${baseUrl}/background/index.ts'`)
+      if (backgroundEntry) {
+        await context.emitFile('background.js', `import '${baseUrl}/${backgroundEntry}'`)
+      }
     },
 
     async transform(code, id) {
-      if (id.endsWith('background/index.ts')) {
+      if (id.endsWith('background.ts') || id.endsWith('background/index.ts')) {
         const result = await transformAsync(code, {
           filename: id,
           presets: ['@babel/preset-typescript'],
@@ -116,4 +125,15 @@ export function background(context: PluginContext): Plugin {
       }
     },
   }
+}
+
+async function detectBackground(): Promise<string | undefined> {
+  const files = ['background.ts', 'background/index.ts']
+  for (const file of files) {
+    try {
+      await access(file)
+      return file
+    } catch {}
+  }
+  return undefined
 }
