@@ -4,7 +4,7 @@ import type { Plugin } from 'vite'
 import type { ManifestPatch, PluginContext } from '../context'
 import { addPageEntrypoint } from '../utils'
 
-type PageName = 'side-panel'
+type PageName = 'content' | 'popup' | 'side-panel'
 
 type PageDefinition = {
   name: PageName
@@ -16,6 +16,16 @@ type PageState = PageDefinition & {
 }
 
 const PAGE_DEFINITIONS: PageDefinition[] = [
+  {
+    name: 'popup',
+    manifestPatch: [
+      {
+        action: {
+          default_popup: 'popup.html',
+        },
+      },
+    ],
+  },
   {
     name: 'side-panel',
     manifestPatch: [
@@ -29,7 +39,7 @@ const PAGE_DEFINITIONS: PageDefinition[] = [
   },
 ] as const
 
-const PAGE_REGEX = new RegExp(`(${map(PAGE_DEFINITIONS, 'name').join('|')})/index.tsx?$`)
+const PAGE_REGEX = new RegExp(`(${map(PAGE_DEFINITIONS, 'name').join('|')})(/index)?.tsx?$`)
 
 export function pages(context: PluginContext): Plugin {
   const activePages: PageState[] = []
@@ -73,6 +83,7 @@ export function pages(context: PluginContext): Plugin {
       )
     },
 
+    // TODO: use watchChange instead?
     configureServer(server) {
       server.watcher.on('add', file => {
         if (isFilePage(file)) {
@@ -90,7 +101,7 @@ export function pages(context: PluginContext): Plugin {
 }
 
 async function detectPage({ name }: PageDefinition): Promise<string | undefined> {
-  const files = [`${name}/index.ts`, `${name}/index.tsx`]
+  const files = [`${name}.ts`, `${name}.tsx`, `${name}/index.ts`, `${name}/index.tsx`]
   for (const file of files) {
     try {
       await fs.access(file)
