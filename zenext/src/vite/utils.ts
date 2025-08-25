@@ -1,19 +1,7 @@
-import { isArray, merge } from 'lodash-es'
-import type { UserConfig } from 'vite'
-import { assert } from '../utils'
+import { concat, isArray, mergeWith } from 'lodash-es'
 
-export function addPageEntrypoint(config: UserConfig, name: string, file: string): UserConfig {
-  const prevInput = (config.build?.rollupOptions?.input ?? {}) as Record<string, string>
-  assert(!isArray(prevInput), 'Expected `build.rollupOptions.input` to be an object or undefined.')
-
-  return merge(config, {
-    build: {
-      rollupOptions: {
-        input: {
-          ...prevInput,
-          [name]: file,
-        },
-      },
-    },
-  })
+export function mergeConcat<Object, Source>(value: Object, srcValue: Source): Object & Source {
+  return mergeWith(value, srcValue, (value, srcValue) =>
+    isArray(value) ? concat(value, srcValue) : undefined,
+  )
 }

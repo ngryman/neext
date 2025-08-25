@@ -1,16 +1,14 @@
 import type { Plugin } from 'vite'
-import { PluginContext } from './context'
-import { background, core, manifest, pages } from './plugins'
-
-export type * from './types'
+import { Api } from './api'
+import { core, manifest, serve } from './plugins'
 
 // TODO: log via the vite logger
 // createLogger
 
 export function zenExt(): Plugin[] {
-  const context = new PluginContext()
-
-  return [core(context), manifest(context), background(context), pages(context)]
+  const api = new Api()
+  // return [core(context), manifest(context), background(context), entries(context)]
+  return [core(api), manifest(api), serve(api)]
 
   // return {
   //   name: 'zen-ext',

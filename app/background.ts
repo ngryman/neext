@@ -1,3 +1,3 @@
 export function sayHello() {
-  return 'Hello from background!'
+  return `${new Date().toISOString()}: Hello from background!`
 }

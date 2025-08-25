@@ -5,9 +5,20 @@ import { sendMessage } from 'zenext/runtime'
 render(() => {
   const [msg, setMsg] = createSignal('')
 
-  onMount(async () => {
+  const sayHello = async () => {
     setMsg(await sendMessage('sayHello', {}))
+  }
+
+  onMount(async () => {
+    sayHello()
   })
 
-  return <div>Message from background: {msg()}</div>
+  return (
+    <div>
+      Message from background: {msg()}
+      <button type="button" onClick={sayHello}>
+        Say hello
+      </button>
+    </div>
+  )
 }, document.body)

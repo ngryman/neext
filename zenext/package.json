@@ -23,6 +23,7 @@
   },
   "dependencies": {
     "@babel/preset-typescript": "^7.26.0",
+    "fast-glob": "^3.3.3",
     "lodash-es": "^4.17.21"
   },
   "peerDependencies": {

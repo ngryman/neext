@@ -2,6 +2,8 @@ export type ManifestFn = (options: { mode: 'production' | 'development' | string
   | Manifest
   | Promise<Manifest>
 
+export type ManifestPatch = Partial<Manifest>
+
 export interface Manifest {
   manifest_version: number
   name: string
