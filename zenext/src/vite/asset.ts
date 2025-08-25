@@ -1,4 +1,6 @@
 import { parse } from 'node:path'
+import type { Rollup } from 'vite'
+import type { ManifestPatch } from './manifest'
 
 export type AssetType = 'content' | 'background' | 'page'
 export type AssetName = 'content' | 'background' | PageName
@@ -7,45 +9,40 @@ export type PageName = 'popup' | 'side-panel'
 export interface AssetDefinition {
   type: AssetType
   patterns: string[]
+  manifestPatch: (asset: Asset) => ManifestPatch
+  emittedFiles: (asset: Asset, baseUrl: string) => EmittedFile[]
+  transform?: (
+    code: string,
+    id: string,
+    mode: string,
+  ) => Rollup.TransformResult | Promise<Rollup.TransformResult>
 }
 
-export type Asset =
-  | AssetBase<'content', 'content'>
-  | AssetBase<'background', 'background'>
-  | AssetBase<'page', PageName>
+export type Asset = BackgroundAsset | ContentAsset | PageAsset
+export type BackgroundAsset = AssetBase<'background', 'background'>
+export type ContentAsset = AssetBase<'content', string>
+export type PageAsset = AssetBase<'page', PageName>
 
 type AssetBase<Type extends AssetType, Name extends string> = {
   type: Type
   name: Name
   sourceFile: string
   outputFile: string
+  definition: AssetDefinition
 }
 
-const PREFIX = '{,src/}'
-const EXTS = '{ts,tsx}'
+export interface EmittedFile {
+  file: string
+  content: string
+}
 
-export const ASSETS_DEFINITIONS: AssetDefinition[] = [
-  {
-    type: 'content',
-    patterns: [`${PREFIX}content{,/index,/*}.${EXTS}`],
-  },
-  {
-    type: 'background',
-    patterns: [`${PREFIX}background{,/index}.${EXTS}`],
-  },
-  {
-    type: 'page',
-    patterns: [`${PREFIX}{popup,side-panel}{,/index}.${EXTS}`],
-  },
-] as const
-
-export function createAsset(sourceFile: string): Asset {
+export function createAsset(definition: AssetDefinition, sourceFile: string): Asset {
   const { name: filename, dir } = parse(sourceFile)
   const type = getAssetType(filename, dir)
   const name = getAssetName(filename, dir)
   const outputFile = sourceFile.replace(/\.tsx?$/, '.js')
 
-  return { type, name, sourceFile, outputFile } as Asset
+  return { type, name, sourceFile, outputFile, definition } as Asset
 }
 
 function getAssetType(name: string, dir: string): AssetType {

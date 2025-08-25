@@ -1,8 +1,13 @@
+import { reduce } from 'lodash-es'
+import type { Asset } from './asset'
+import { mergeConcat } from './utils'
+
 export type ManifestFn = (options: { mode: 'production' | 'development' | string }) =>
   | Manifest
   | Promise<Manifest>
 
 export type ManifestPatch = Partial<Manifest>
+export type PatchFn = (asset: Asset) => ManifestPatch
 
 export interface Manifest {
   manifest_version: number
@@ -194,4 +199,8 @@ export type WebAccessibleResourceByMatch = {
   matches: string[]
   resources: string[]
   use_dynamic_url?: boolean
+}
+
+export function patchManifest(manifest: Manifest, patches: ManifestPatch[]): Manifest {
+  return reduce(patches, mergeConcat, manifest)
 }

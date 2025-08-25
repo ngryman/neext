@@ -1,0 +1,29 @@
+import { mkdir, writeFile } from 'node:fs/promises'
+import { join, parse } from 'node:path'
+import { isObject } from 'lodash-es'
+
+export interface EmittedFile {
+  file: string
+  content: string
+}
+
+const BASE_PATTERN = '{,src/}'
+const EXT_PATTERN = '{ts,tsx}'
+
+export function createFilePattern(name: string | string[], onlyIndex = true): string {
+  const namePattern = Array.isArray(name) ? `{${name.join(',')}}` : name
+  const indexPattern = onlyIndex ? '{,/index}' : '{,/*}'
+  return `${BASE_PATTERN}${namePattern}${indexPattern}.${EXT_PATTERN}`
+}
+
+export async function emitFile(outDir: string, emittedFile: EmittedFile): Promise<void> {
+  const { file, content } = emittedFile
+  const { base, dir } = parse(file)
+  const destDir = `${outDir}/${dir}`
+  await mkdir(destDir, { recursive: true })
+  await writeFile(
+    join(destDir, base),
+    isObject(content) ? JSON.stringify(content, null, 2) : content,
+    'utf-8',
+  )
+}
