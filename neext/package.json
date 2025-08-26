@@ -10,9 +10,9 @@
   },
   "files": ["dist/"],
   "exports": {
-    "./runtime": {
-      "import": "./dist/runtime.js",
-      "types": "./dist/runtime.d.ts"
+    "./sdk": {
+      "import": "./dist/sdk.js",
+      "types": "./dist/sdk.d.ts"
     },
     "./vite": {
       "import": "./dist/vite.js",
@@ -25,6 +25,14 @@
     "./vite-dev-content": {
       "import": "./dist/vite-dev-content.js",
       "types": "./dist/vite-dev-content.d.ts"
+    },
+    "./vite-runtime-background": {
+      "import": "./dist/vite-runtime-background.js",
+      "types": "./dist/vite-runtime-background.d.ts"
+    },
+    "./vite-runtime-content": {
+      "import": "./dist/vite-runtime-content.js",
+      "types": "./dist/vite-runtime-content.d.ts"
     }
   },
   "dependencies": {

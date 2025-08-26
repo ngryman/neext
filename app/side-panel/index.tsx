@@ -1,4 +1,4 @@
-import { sendMessage } from 'neext/runtime'
+import { sendMessage } from 'neext/sdk'
 import { createSignal, onMount } from 'solid-js'
 import { render } from 'solid-js/web'
 
