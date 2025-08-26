@@ -1,5 +1,5 @@
 import { parse } from 'node:path'
-import type { Rollup } from 'vite'
+import type { TransformResult } from 'vite'
 import type { ManifestPatch } from './manifest'
 
 export type AssetType = 'content' | 'background' | 'page'
@@ -11,12 +11,9 @@ export interface AssetDefinition {
   pattern: string
   manifestPatch: (asset: Asset) => ManifestPatch
   emittedFiles: (asset: Asset, baseUrl: string) => EmittedFile[]
-  transform?: (
-    code: string,
-    id: string,
-    mode: string,
-  ) => Rollup.TransformResult | Promise<Rollup.TransformResult>
+  transform?: AssetTransform
 }
+export type AssetTransform = (code: string, id: string, mode: string) => Promise<TransformResult>
 
 export type Asset = BackgroundAsset | ContentAsset | PageAsset
 export type BackgroundAsset = AssetBase<'background', 'background'>

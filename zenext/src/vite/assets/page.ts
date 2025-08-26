@@ -1,8 +1,8 @@
 import { parse } from 'node:path'
-import type { AssetDefinition } from '../asset'
-import type { PageName } from '../asset'
-import { createFilePattern } from '../fs'
-import type { PatchFn } from '../manifest'
+import type { AssetDefinition } from '@/vite/asset'
+import type { PageName } from '@/vite/asset'
+import { createFilePattern } from '@/vite/fs'
+import type { PatchFn } from '@/vite/manifest'
 
 const MANIFEST_PATCHES: Record<PageName, PatchFn> = {
   popup: asset => ({

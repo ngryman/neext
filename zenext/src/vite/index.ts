@@ -2,8 +2,8 @@ import fg from 'fast-glob'
 import { flatMap, map, reduce } from 'lodash-es'
 import type { Plugin, ResolvedConfig } from 'vite'
 import { type Asset, createAsset } from './asset'
+import { definitions } from './assets'
 import { addEntrypoint } from './config'
-import { definitions } from './definitions'
 import { emitFile } from './fs'
 import { type ManifestPatch, patchManifest } from './manifest'
 
@@ -72,6 +72,13 @@ export function zenExt(): Plugin {
       server.ws.on('zenext:reload', () => {
         server.ws.send({ type: 'custom', event: 'zenext:reload' })
       })
+    },
+
+    handleHotUpdate(ctx) {
+      if (ctx.file.includes('content')) {
+        ctx.server.ws.send({ type: 'custom', event: 'zenext:reload' })
+        return []
+      }
     },
 
     async transform(code, id) {

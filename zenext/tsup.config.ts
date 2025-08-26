@@ -9,7 +9,7 @@ export default defineConfig({
   entry: {
     runtime: 'src/runtime/index.ts',
     vite: 'src/vite/index.ts',
-    'vite-runtime-background': 'src/vite/runtime/background.ts',
-    'vite-runtime-content': 'src/vite/runtime/content.ts',
+    'vite-dev-background': 'src/vite/assets/background/dev.ts',
+    'vite-dev-content': 'src/vite/assets/content/dev.ts',
   },
 })
