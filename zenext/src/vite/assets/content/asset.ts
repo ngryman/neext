@@ -19,5 +19,9 @@ export const content: AssetDefinition = {
       content: `import('${baseUrl}/${asset.sourceFile}').catch(console.error)`,
     },
   ],
+  handleHotUpdate: ctx => {
+    ctx.server.ws.send({ type: 'custom', event: 'zenext:reload' })
+    return []
+  },
   transform,
 }

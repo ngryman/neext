@@ -75,10 +75,8 @@ export function zenExt(): Plugin {
     },
 
     handleHotUpdate(ctx) {
-      if (ctx.file.includes('content')) {
-        ctx.server.ws.send({ type: 'custom', event: 'zenext:reload' })
-        return []
-      }
+      const asset = assets.find(asset => ctx.file.endsWith(asset.sourceFile))
+      return asset?.definition.handleHotUpdate?.(ctx)
     },
 
     async transform(code, id) {
