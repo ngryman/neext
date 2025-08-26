@@ -1,5 +1,5 @@
-import type { AssetDefinition } from '@/vite/asset'
-import { createFilePattern } from '@/vite/fs'
+import type { AssetDefinition } from '@/vite/lib/asset'
+import { createFilePattern } from '@/vite/lib/fs'
 import { transform } from './transform'
 
 export const background: AssetDefinition = {

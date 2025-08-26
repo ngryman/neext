@@ -1,5 +1,5 @@
-import type { AssetTransform } from '@/vite/asset'
-import { insertImport, wrapMessageHandler } from '@/vite/transform'
+import type { AssetTransform } from '@/vite/lib/asset'
+import { insertImport, wrapMessageHandler } from '@/vite/lib/transform'
 import { template, transformAsync } from '@babel/core'
 import type { Visitor } from '@babel/traverse'
 import type { TransformResult } from 'vite'
