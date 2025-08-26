@@ -3,17 +3,7 @@ import type { Visitor } from '@babel/traverse'
 import type { AssetDefinition } from '../asset'
 import { createFilePattern } from '../fs'
 
-const hmrHandler = template(`
-  if (import.meta.hot) {
-    import.meta.hot.accept(() => {
-      window.location.reload()
-    })
-
-    import.meta.hot.on('zenext:reload', () => {
-      window.location.reload()
-    })
-  }
-`)
+const importDevRuntime = template.ast`import 'zenext/vite-runtime-content'`
 
 export const content: AssetDefinition = {
   type: 'content',
@@ -40,9 +30,8 @@ export const content: AssetDefinition = {
         (): { visitor: Visitor } => ({
           visitor: {
             Program(path) {
-              // Add HMR handling for content scripts in development mode
               if (mode === 'development') {
-                path.pushContainer('body', hmrHandler())
+                path.unshiftContainer('body', importDevRuntime)
               }
             },
           },

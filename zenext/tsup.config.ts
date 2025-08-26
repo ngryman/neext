@@ -1,7 +1,7 @@
 import { defineConfig } from 'tsup'
 
 export default defineConfig({
-  name: 'vite',
+  name: 'zenext',
   format: ['esm'],
   clean: true,
   minify: true,
@@ -9,5 +9,7 @@ export default defineConfig({
   entry: {
     runtime: 'src/runtime/index.ts',
     vite: 'src/vite/index.ts',
+    'vite-runtime-background': 'src/vite/runtime/background.ts',
+    'vite-runtime-content': 'src/vite/runtime/content.ts',
   },
 })

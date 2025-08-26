@@ -4,13 +4,8 @@ import * as t from '@babel/types'
 import type { AssetDefinition } from '../asset'
 import { createFilePattern } from '../fs'
 
-const hmrHandler = template(`
-  import.meta.hot.accept(() => {
-    chrome.runtime.reload()
-  })
-
-  import.meta.hot.send('zenext:reload')
-`)
+const importRuntime = template.ast`import { addMessageHandler } from 'zenext/runtime'`
+const importDevRuntime = template.ast`import 'zenext/vite-runtime-background'`
 
 export const background: AssetDefinition = {
   type: 'background',
@@ -35,22 +30,9 @@ export const background: AssetDefinition = {
         (): { visitor: Visitor } => ({
           visitor: {
             Program(path) {
-              const importDeclaration = t.importDeclaration(
-                [
-                  t.importSpecifier(
-                    t.identifier('addMessageHandler'),
-                    t.identifier('addMessageHandler'),
-                  ),
-                ],
-                t.stringLiteral('zenext/runtime'),
-              )
-              path.unshiftContainer('body', importDeclaration)
-
-              // HMR is disabled for service workers due to import() restrictions
-              // Service workers will reload via full page reload instead
-              // TODO: investigate to see if we still could use HMR
+              path.unshiftContainer('body', importRuntime)
               if (mode === 'development') {
-                path.pushContainer('body', hmrHandler())
+                path.unshiftContainer('body', importDevRuntime)
               }
             },
             FunctionDeclaration(path) {

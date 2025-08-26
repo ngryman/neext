@@ -1,6 +1,6 @@
 import fg from 'fast-glob'
 import { flatMap, map, reduce } from 'lodash-es'
-import { type Plugin, type ResolvedConfig, createLogger } from 'vite'
+import type { Plugin, ResolvedConfig } from 'vite'
 import { type Asset, createAsset } from './asset'
 import { addEntrypoint } from './config'
 import { definitions } from './definitions'
@@ -9,7 +9,6 @@ import { type ManifestPatch, patchManifest } from './manifest'
 
 export function zenExt(): Plugin {
   const assets: Asset[] = []
-  const logger = createLogger()
   let config: ResolvedConfig
 
   return {
