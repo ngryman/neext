@@ -20,7 +20,7 @@ export const content: AssetDefinition = {
     },
   ],
   handleHotUpdate: ctx => {
-    ctx.server.ws.send({ type: 'custom', event: 'zenext:reload' })
+    ctx.server.ws.send({ type: 'custom', event: 'neext:reload' })
     return []
   },
   transform,

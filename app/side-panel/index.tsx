@@ -1,6 +1,6 @@
+import { sendMessage } from 'neext/runtime'
 import { createSignal, onMount } from 'solid-js'
 import { render } from 'solid-js/web'
-import { sendMessage } from 'zenext/runtime'
 
 render(() => {
   const [msg, setMsg] = createSignal('')

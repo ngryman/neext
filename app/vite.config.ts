@@ -1,10 +1,10 @@
 import { resolve } from 'node:path'
+import { neext } from 'neext/vite'
 import { defineConfig } from 'vite'
 import solid from 'vite-plugin-solid'
-import { zenExt } from 'zenext/vite'
 
 export default defineConfig({
-  plugins: [solid(), zenExt()],
+  plugins: [solid(), neext()],
   build: {
     target: 'esnext',
     emptyOutDir: true,

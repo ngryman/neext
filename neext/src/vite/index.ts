@@ -7,7 +7,7 @@ import { addEntrypoint } from './config'
 import { emitFile } from './fs'
 import { type ManifestPatch, patchManifest } from './manifest'
 
-export function zenExt(): Plugin {
+export function neext(): Plugin {
   const assets: Asset[] = []
   let config: ResolvedConfig
 
@@ -69,8 +69,8 @@ export function zenExt(): Plugin {
     },
 
     configureServer(server) {
-      server.ws.on('zenext:reload', () => {
-        server.ws.send({ type: 'custom', event: 'zenext:reload' })
+      server.ws.on('neext:reload', () => {
+        server.ws.send({ type: 'custom', event: 'neext:reload' })
       })
     },
 

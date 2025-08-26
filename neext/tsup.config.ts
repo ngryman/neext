@@ -1,7 +1,7 @@
 import { defineConfig } from 'tsup'
 
 export default defineConfig({
-  name: 'zenext',
+  name: 'neext',
   format: ['esm'],
   clean: true,
   minify: true,

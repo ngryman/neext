@@ -5,7 +5,7 @@ if (import.meta.hot) {
 
   chrome.runtime.onInstalled.addListener(({ reason }) => {
     if (reason === chrome.runtime.OnInstalledReason.UPDATE) {
-      import.meta.hot?.send('zenext:reload')
+      import.meta.hot?.send('neext:reload')
     }
   })
 }

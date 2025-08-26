@@ -1,5 +1,5 @@
 if (import.meta.hot) {
-  import.meta.hot.on('zenext:reload', () => {
+  import.meta.hot.on('neext:reload', () => {
     if (document.hidden) {
       const handler = () => {
         if (!document.hidden) {

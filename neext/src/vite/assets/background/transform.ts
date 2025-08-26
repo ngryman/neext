@@ -4,8 +4,8 @@ import type { Visitor } from '@babel/traverse'
 import * as t from '@babel/types'
 import type { TransformResult } from 'vite'
 
-const importRuntime = template.ast`import { addMessageHandler } from 'zenext/runtime'`
-const importDevRuntime = template.ast`import 'zenext/vite-dev-background'`
+const importRuntime = template.ast`import { addMessageHandler } from 'neext/runtime'`
+const importDevRuntime = template.ast`import 'neext/vite-dev-background'`
 
 export const transform: AssetTransform = async (code, id, mode) => {
   return (await transformAsync(code, {
