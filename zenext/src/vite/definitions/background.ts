@@ -1,12 +1,20 @@
-import { transformAsync } from '@babel/core'
+import { template, transformAsync } from '@babel/core'
 import type { Visitor } from '@babel/traverse'
 import * as t from '@babel/types'
 import type { AssetDefinition } from '../asset'
 import { createFilePattern } from '../fs'
 
+const hmrHandler = template(`
+  import.meta.hot.accept(() => {
+    chrome.runtime.reload()
+  })
+
+  import.meta.hot.send('zenext:reload')
+`)
+
 export const background: AssetDefinition = {
   type: 'background',
-  patterns: [createFilePattern('background')],
+  pattern: createFilePattern('background'),
   manifestPatch: asset => ({
     background: {
       service_worker: asset.outputFile,
@@ -42,27 +50,7 @@ export const background: AssetDefinition = {
               // Service workers will reload via full page reload instead
               // TODO: investigate to see if we still could use HMR
               if (mode === 'development') {
-                const hotAcceptCall = t.expressionStatement(
-                  t.callExpression(
-                    t.memberExpression(
-                      t.memberExpression(t.identifier('import.meta'), t.identifier('hot')),
-                      t.identifier('accept'),
-                    ),
-                    [
-                      t.arrowFunctionExpression(
-                        [],
-                        t.callExpression(
-                          t.memberExpression(
-                            t.identifier('chrome.runtime'),
-                            t.identifier('reload'),
-                          ),
-                          [],
-                        ),
-                      ),
-                    ],
-                  ),
-                )
-                path.pushContainer('body', hotAcceptCall)
+                path.pushContainer('body', hmrHandler())
               }
             },
             FunctionDeclaration(path) {

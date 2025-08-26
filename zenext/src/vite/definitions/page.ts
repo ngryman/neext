@@ -20,7 +20,7 @@ const MANIFEST_PATCHES: Record<PageName, PatchFn> = {
 
 export const page: AssetDefinition = {
   type: 'page',
-  patterns: [createFilePattern(['popup', 'side-panel'])],
+  pattern: createFilePattern(['popup', 'side-panel']),
   manifestPatch: asset => MANIFEST_PATCHES[asset.name as PageName](asset),
   emittedFiles: (asset, baseUrl) => [
     {

@@ -8,8 +8,6 @@ import { emitFile } from './fs'
 import { type ManifestPatch, patchManifest } from './manifest'
 
 export function zenExt(): Plugin {
-  // const api = new Api()
-  // return [core(api), background(api), content(api), page(api), manifest(api)]
   const assets: Asset[] = []
   const logger = createLogger()
   let config: ResolvedConfig
@@ -24,7 +22,7 @@ export function zenExt(): Plugin {
       }
 
       for (const definition of definitions) {
-        const files = await fg(definition.patterns, { cwd: config.root })
+        const files = await fg(definition.pattern, { cwd: config.root })
         for (const file of files) {
           const asset: Asset = createAsset(definition, file)
           assets.push(asset)
@@ -44,7 +42,6 @@ export function zenExt(): Plugin {
 
     async buildStart() {
       const patches = getManifestPatches(assets)
-      logger.info(JSON.stringify(patches, null, 2))
       const manifest = patchManifest(
         {
           name: 'My App',
@@ -70,6 +67,12 @@ export function zenExt(): Plugin {
           ),
         ),
       ])
+    },
+
+    configureServer(server) {
+      server.ws.on('zenext:reload', () => {
+        server.ws.send({ type: 'custom', event: 'zenext:reload' })
+      })
     },
 
     async transform(code, id) {

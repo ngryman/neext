@@ -8,7 +8,7 @@ export type PageName = 'popup' | 'side-panel'
 
 export interface AssetDefinition {
   type: AssetType
-  patterns: string[]
+  pattern: string
   manifestPatch: (asset: Asset) => ManifestPatch
   emittedFiles: (asset: Asset, baseUrl: string) => EmittedFile[]
   transform?: (
