@@ -26,3 +26,17 @@ export function wrapMessageHandler(path: NodePath<t.FunctionDeclaration>) {
 
   path.parentPath.replaceWith(wrappedFunction)
 }
+
+export function renderComponent(path: NodePath<t.ExportDefaultDeclaration>) {
+  const declaration = path.node.declaration
+
+  // Check if the default export is an identifier (after SolidJS transform)
+  if (t.isIdentifier(declaration)) {
+    const wrappedFunction = t.expressionStatement(
+      t.callExpression(t.identifier('render'), [declaration, t.identifier('document.body')]),
+    )
+
+    path.replaceWith(wrappedFunction)
+    return
+  }
+}

@@ -17,7 +17,8 @@
     "enabled": true,
     "rules": {
       "a11y": {
-        "useKeyWithClickEvents": "off"
+        "useKeyWithClickEvents": "off",
+        "useButtonType": "off"
       },
       "correctness": {
         "noUnusedImports": {
