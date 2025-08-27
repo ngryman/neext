@@ -1,3 +1,5 @@
+import { readFile } from 'node:fs/promises'
+import { resolve } from 'node:path'
 import fg from 'fast-glob'
 import { flatMap, map, reduce } from 'lodash-es'
 import type { Plugin, ResolvedConfig } from 'vite'
@@ -82,6 +84,28 @@ export function neext(): Plugin {
     async transform(code, id) {
       const asset = assets.find(asset => id.endsWith(asset.sourceFile))
       return asset?.definition.transform?.(code, id, config.mode)
+    },
+
+    resolveId(id) {
+      if (id === 'virtual:neext/renderer') {
+        // Prefix with \0 means it's a resolved virtual module
+        return '\0virtual:neext/renderer'
+      }
+    },
+
+    async load(id) {
+      if (id === '\0virtual:neext/renderer') {
+        const rendererPath = resolve(config.root, 'renderer.ts')
+        try {
+          return await readFile(rendererPath, 'utf8')
+        } catch {
+          return `
+            export function render() {
+              console.error('No renderer found. Please create a \`renderer.ts\` file in your app.')
+            }
+          `
+        }
+      }
     },
   }
 }

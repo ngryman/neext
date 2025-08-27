@@ -1,4 +1,4 @@
-import type { NodePath } from '@babel/core'
+import { type NodePath, template } from '@babel/core'
 import * as t from '@babel/types'
 
 export function insertImport(path: NodePath<t.Program>, node: t.Statement | t.Statement[]) {
@@ -27,16 +27,15 @@ export function wrapMessageHandler(path: NodePath<t.FunctionDeclaration>) {
   path.parentPath.replaceWith(wrappedFunction)
 }
 
+const renderToAnchor = template(`
+  renderToAnchor(%%component%%, typeof anchor === 'string' ? anchor : document.body)
+`)
+
 export function renderComponent(path: NodePath<t.ExportDefaultDeclaration>) {
   const declaration = path.node.declaration
 
-  // Check if the default export is an identifier (after SolidJS transform)
   if (t.isIdentifier(declaration)) {
-    const wrappedFunction = t.expressionStatement(
-      t.callExpression(t.identifier('render'), [declaration, t.identifier('document.body')]),
-    )
-
-    path.replaceWith(wrappedFunction)
-    return
+    const statement = renderToAnchor({ component: declaration })
+    path.replaceWithMultiple(statement)
   }
 }

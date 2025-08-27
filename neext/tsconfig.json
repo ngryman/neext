@@ -1,9 +1,30 @@
 {
   "extends": "../tsconfig.base.json",
+  "include": ["src/**/*"],
+  "exclude": ["dist/"],
   "compilerOptions": {
-    "types": ["chrome", "vite/client"],
     "paths": {
       "@/*": ["./src/*"]
     }
-  }
+  },
+  "overrides": [
+    {
+      "files": ["src/vite/**/*"],
+      "compilerOptions": {
+        "types": ["node"]
+      }
+    },
+    {
+      "files": ["src/vite/assets/**/dev.ts", "src/vite/assets/**/runtime.ts"],
+      "compilerOptions": {
+        "types": ["chrome"]
+      }
+    },
+    {
+      "files": ["src/sdk/**/*"],
+      "compilerOptions": {
+        "types": ["chrome"]
+      }
+    }
+  ]
 }

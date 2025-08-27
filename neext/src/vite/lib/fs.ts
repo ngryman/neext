@@ -10,10 +10,17 @@ export interface EmittedFile {
 const BASE_PATTERN = '{,src/}'
 const EXT_PATTERN = '{ts,tsx}'
 
-export function createFilePattern(name: string | string[], onlyIndex = true): string {
+export interface FilePatternOptions {
+  filePattern?: string
+}
+
+export function createFilePattern(
+  name: string | string[],
+  options: FilePatternOptions = {},
+): string {
+  const { filePattern = '{,/index}' } = options
   const namePattern = Array.isArray(name) ? `{${name.join(',')}}` : name
-  const indexPattern = onlyIndex ? '{,/index}' : '{,/*}'
-  return `${BASE_PATTERN}${namePattern}${indexPattern}.${EXT_PATTERN}`
+  return `${BASE_PATTERN}${namePattern}${filePattern}.${EXT_PATTERN}`
 }
 
 export async function emitFile(outDir: string, emittedFile: EmittedFile): Promise<void> {

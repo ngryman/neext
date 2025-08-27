@@ -2,9 +2,9 @@ import type { AssetDefinition } from '@/vite/lib/asset'
 import { createFilePattern } from '@/vite/lib/fs'
 import { transform } from './transform'
 
-export const content: AssetDefinition = {
-  type: 'content',
-  pattern: createFilePattern('content', { filePattern: '{,/*}' }),
+export const portal: AssetDefinition = {
+  type: 'portal',
+  pattern: createFilePattern('portal', { filePattern: '{,/*}' }),
   manifestPatch: asset => ({
     content_scripts: [
       {

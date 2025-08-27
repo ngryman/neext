@@ -22,6 +22,10 @@
       "import": "./dist/vite-dev-background.js",
       "types": "./dist/vite-dev-background.d.ts"
     },
+    "./vite-dev-portal": {
+      "import": "./dist/vite-dev-portal.js",
+      "types": "./dist/vite-dev-portal.d.ts"
+    },
     "./vite-dev-content": {
       "import": "./dist/vite-dev-content.js",
       "types": "./dist/vite-dev-content.d.ts"
@@ -33,6 +37,10 @@
     "./vite-runtime-content": {
       "import": "./dist/vite-runtime-content.js",
       "types": "./dist/vite-runtime-content.d.ts"
+    },
+    "./vite-runtime-portal": {
+      "import": "./dist/vite-runtime-portal.js",
+      "types": "./dist/vite-runtime-portal.d.ts"
     }
   },
   "dependencies": {

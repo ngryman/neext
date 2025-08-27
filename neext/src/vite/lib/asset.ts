@@ -1,8 +1,8 @@
-import { parse } from 'node:path'
+import { type ParsedPath, parse } from 'node:path'
 import type { HmrContext, ModuleNode, TransformResult } from 'vite'
 import type { ManifestPatch } from './manifest'
 
-export type AssetType = 'content' | 'background' | 'page'
+export type AssetType = 'content' | 'background' | 'page' | 'portal'
 export type AssetName = 'content' | 'background' | PageName
 export type PageName = 'popup' | 'side-panel'
 
@@ -22,6 +22,7 @@ export type Asset = BackgroundAsset | ContentAsset | PageAsset
 export type BackgroundAsset = AssetBase<'background', 'background'>
 export type ContentAsset = AssetBase<'content', string>
 export type PageAsset = AssetBase<'page', PageName>
+export type PortalAsset = AssetBase<'portal', string>
 
 type AssetBase<Type extends AssetType, Name extends string> = {
   type: Type
@@ -37,20 +38,14 @@ export interface EmittedFile {
 }
 
 export function createAsset(definition: AssetDefinition, sourceFile: string): Asset {
-  const { name: filename, dir } = parse(sourceFile)
-  const type = getAssetType(filename, dir)
-  const name = getAssetName(filename, dir)
+  const file = parse(sourceFile)
+  const name = getAssetName(file)
   const outputFile = sourceFile.replace(/\.tsx?$/, '.js')
 
-  return { type, name, sourceFile, outputFile, definition } as Asset
+  return { type: definition.type, name, sourceFile, outputFile, definition } as Asset
 }
 
-function getAssetType(name: string, dir: string): AssetType {
-  if (dir.endsWith('content') || name === 'content') return 'content'
-  if (dir.endsWith('background') || name === 'background') return 'background'
-  return 'page'
-}
-
-function getAssetName(name: string, dir: string): AssetName {
+function getAssetName(file: ParsedPath): AssetName {
+  const { name, dir } = file
   return (name !== 'index' ? name : (dir.split('/').at(-1) ?? 'unknown')) as AssetName
 }
