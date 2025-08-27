@@ -9,21 +9,21 @@
   },
   "overrides": [
     {
-      "files": ["src/vite/**/*"],
+      "files": ["src/sdk/**/*"],
+      "compilerOptions": {
+        "types": ["chrome", "vite/client"]
+      }
+    },
+    {
+      "files": ["src/vite/**/!(*dev|*runtime).ts"],
       "compilerOptions": {
         "types": ["node"]
       }
     },
     {
-      "files": ["src/vite/assets/**/dev.ts", "src/vite/assets/**/runtime.ts"],
+      "files": ["src/vite/assets/*/dev.ts", "src/vite/assets/*/runtime.ts"],
       "compilerOptions": {
-        "types": ["chrome"]
-      }
-    },
-    {
-      "files": ["src/sdk/**/*"],
-      "compilerOptions": {
-        "types": ["chrome"]
+        "types": ["runtime.d.ts"]
       }
     }
   ]
