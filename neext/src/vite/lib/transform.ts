@@ -1,8 +1,12 @@
 import { type NodePath, template } from '@babel/core'
 import * as t from '@babel/types'
 
-export function insertImport(path: NodePath<t.Program>, node: t.Statement | t.Statement[]) {
+export function insertBody(path: NodePath<t.Program>, node: t.Statement | t.Statement[]) {
   path.unshiftContainer('body', node)
+}
+
+export function appendBody(path: NodePath<t.Program>, node: t.Statement | t.Statement[]) {
+  path.pushContainer('body', node)
 }
 
 export function wrapMessageHandler(path: NodePath<t.FunctionDeclaration>) {

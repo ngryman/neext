@@ -1,12 +1,12 @@
 import type { AssetTransform } from '@/vite/lib/asset'
-import { insertImport, renderComponent, wrapMessageHandler } from '@/vite/lib/transform'
+import { appendBody, insertBody, renderComponent, wrapMessageHandler } from '@/vite/lib/transform'
 import { template, transformAsync } from '@babel/core'
 import type { Visitor } from '@babel/traverse'
 import type { TransformResult } from 'vite'
+import { devRuntime } from './dev'
 
 const importSdk = template.ast`import { addMessageHandler } from 'neext/sdk'`
 const importRuntime = template.ast`import { renderToAnchor } from 'neext/vite-runtime-portal'`
-const importDevRuntime = template.ast`import 'neext/vite-dev-portal'`
 
 export const transform: AssetTransform = async (code, id, mode) => {
   const result = await transformAsync(code, {
@@ -15,11 +15,12 @@ export const transform: AssetTransform = async (code, id, mode) => {
     plugins: [
       (): { visitor: Visitor } => ({
         visitor: {
-          Program(path) {
-            insertImport(path, importSdk)
-            insertImport(path, importRuntime)
+          async Program(path) {
+            insertBody(path, importSdk)
+            insertBody(path, importRuntime)
             if (mode === 'development') {
-              insertImport(path, importDevRuntime)
+              insertBody(path, template.ast(devRuntime.toString()))
+              appendBody(path, template.ast`devRuntime()`)
             }
           },
           ExportDefaultDeclaration(path) {

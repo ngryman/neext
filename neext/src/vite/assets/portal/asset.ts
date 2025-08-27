@@ -19,9 +19,6 @@ export const portal: AssetDefinition = {
       content: `import('${baseUrl}/${asset.sourceFile}').catch(console.error)`,
     },
   ],
-  handleHotUpdate: ctx => {
-    ctx.server.ws.send({ type: 'custom', event: 'neext:reload' })
-    return []
-  },
+
   transform,
 }

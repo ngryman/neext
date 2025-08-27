@@ -1,4 +1,4 @@
-export const anchor = '#top-level-buttons-computed'
+// export const anchor = '#top-level-buttons-computed'
 
 export default function SummarizeButton() {
   const className = document.querySelector('#menu [title="Share"]')?.className

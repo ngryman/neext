@@ -1,6 +1,7 @@
 {
   "extends": "../tsconfig.base.json",
   "compilerOptions": {
-    "types": ["chrome", "vite/client"]
+    "types": ["chrome", "vite/client"],
+    "jsxImportSource": "solid-js"
   }
 }

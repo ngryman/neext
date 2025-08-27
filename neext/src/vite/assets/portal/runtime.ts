@@ -8,15 +8,22 @@ export function renderToAnchor(component: Component, anchor: string | HTMLElemen
 
   const container = getContainer()
   if (container) {
-    console.log(render)
-    render(component, container as HTMLElement)
+    const root = document.createElement('div')
+    root.id = 'neext-portal-root'
+    root.style.display = 'contents'
+    container.appendChild(root)
+    render(component, root)
     return
   }
 
   const observer = new MutationObserver(() => {
     const container = getContainer()
     if (container) {
-      render(component, container as HTMLElement)
+      const root = document.createElement('div')
+      root.id = 'neext-portal-root'
+      root.style.display = 'contents'
+      container.appendChild(root)
+      render(component, root)
       observer.disconnect()
     }
   })

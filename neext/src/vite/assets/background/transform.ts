@@ -1,5 +1,5 @@
 import type { AssetTransform } from '@/vite/lib/asset'
-import { insertImport, wrapMessageHandler } from '@/vite/lib/transform'
+import { insertBody, wrapMessageHandler } from '@/vite/lib/transform'
 import { template, transformAsync } from '@babel/core'
 import type { Visitor } from '@babel/traverse'
 import type { TransformResult } from 'vite'
@@ -16,10 +16,10 @@ export const transform: AssetTransform = async (code, id, mode) => {
       (): { visitor: Visitor } => ({
         visitor: {
           Program(path) {
-            insertImport(path, importSdk)
-            insertImport(path, importRuntime)
+            insertBody(path, importSdk)
+            insertBody(path, importRuntime)
             if (mode === 'development') {
-              insertImport(path, importDevRuntime)
+              insertBody(path, importDevRuntime)
             }
           },
           FunctionDeclaration(path) {
