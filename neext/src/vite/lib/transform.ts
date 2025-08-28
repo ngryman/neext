@@ -1,4 +1,4 @@
-import { type NodePath, template } from '@babel/core'
+import { type NodePath, template, transformSync } from '@babel/core'
 import * as t from '@babel/types'
 
 export function insertBody(path: NodePath<t.Program>, node: t.Statement | t.Statement[]) {
@@ -42,4 +42,12 @@ export function renderComponent(path: NodePath<t.ExportDefaultDeclaration>) {
     const statement = renderToAnchor({ component: declaration })
     path.replaceWithMultiple(statement)
   }
+}
+
+export function transpile(code: string, filename: string): t.Statement | t.Statement[] {
+  const result = transformSync(code, {
+    filename,
+    presets: ['@babel/preset-typescript'],
+  })
+  return template.ast(result?.code ?? '')
 }

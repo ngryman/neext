@@ -5,6 +5,10 @@ interface Window {
   NEEXT_APP_TAB_ID: number
 }
 
+declare global {
+  const anchor: string | undefined
+}
+
 declare module 'virtual:neext/renderer' {
   // biome-ignore lint/suspicious/noExplicitAny: let the types flow
   export type Component = () => any

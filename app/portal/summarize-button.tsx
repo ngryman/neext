@@ -3,5 +3,5 @@
 export default function SummarizeButton() {
   const className = document.querySelector('#menu [title="Share"]')?.className
 
-  return <button class={className}>Summarize</button>
+  return <button class={className}>Summarize!</button>
 }

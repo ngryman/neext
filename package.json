@@ -4,6 +4,7 @@
   "workspaces": ["app", "neext"],
   "devDependencies": {
     "@biomejs/biome": "^1.9.4",
+    "esbuild-plugin-raw": "^0.2.0",
     "typescript": "^5.0.0"
   }
 }
