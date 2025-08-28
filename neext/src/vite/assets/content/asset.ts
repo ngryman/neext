@@ -1,6 +1,6 @@
 import type { AssetDefinition } from '@/vite/lib/asset'
 import { createFilePattern } from '@/vite/lib/fs'
-import { transform } from './transform'
+import { visitor } from './visitor'
 
 export const content: AssetDefinition = {
   type: 'content',
@@ -23,5 +23,5 @@ export const content: AssetDefinition = {
     ctx.server.ws.send({ type: 'custom', event: 'neext:reload' })
     return []
   },
-  transform,
+  visitor,
 }

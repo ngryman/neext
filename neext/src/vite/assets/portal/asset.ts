@@ -1,6 +1,6 @@
 import type { AssetDefinition } from '@/vite/lib/asset'
 import { createFilePattern } from '@/vite/lib/fs'
-import { transform } from './transform'
+import { visitor } from './visitor'
 
 export const portal: AssetDefinition = {
   type: 'portal',
@@ -19,6 +19,5 @@ export const portal: AssetDefinition = {
       content: `import('${baseUrl}/${asset.sourceFile}').catch(console.error)`,
     },
   ],
-
-  transform,
+  visitor,
 }

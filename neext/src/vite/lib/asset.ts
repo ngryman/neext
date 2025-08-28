@@ -1,5 +1,6 @@
 import { type ParsedPath, parse } from 'node:path'
-import type { HmrContext, ModuleNode, TransformResult } from 'vite'
+import type { Visitor } from '@babel/traverse'
+import type { HmrContext, ModuleNode } from 'vite'
 import type { ManifestPatch } from './manifest'
 
 export type AssetType = 'content' | 'background' | 'page' | 'portal'
@@ -14,9 +15,9 @@ export interface AssetDefinition {
   handleHotUpdate?: (
     ctx: HmrContext,
   ) => Array<ModuleNode> | void | Promise<Array<ModuleNode>> | Promise<void>
-  transform?: AssetTransform
+  visitor?: AssetVisitor
 }
-export type AssetTransform = (code: string, id: string, mode: string) => Promise<TransformResult>
+export type AssetVisitor = (mode: string) => Visitor
 
 export type Asset = BackgroundAsset | ContentAsset | PageAsset
 export type BackgroundAsset = AssetBase<'background', 'background'>

@@ -1,8 +1,9 @@
 import { readFile } from 'node:fs/promises'
 import { resolve } from 'node:path'
+import { transformAsync } from '@babel/core'
 import fg from 'fast-glob'
 import { flatMap, map, reduce } from 'lodash-es'
-import type { Plugin, ResolvedConfig } from 'vite'
+import type { Plugin, ResolvedConfig, TransformResult } from 'vite'
 import { definitions } from './assets'
 import { type Asset, createAsset } from './lib/asset'
 import { addEntrypoint } from './lib/config'
@@ -83,7 +84,14 @@ export function neext(): Plugin {
 
     async transform(code, id) {
       const asset = assets.find(asset => id.endsWith(asset.sourceFile))
-      return asset?.definition.transform?.(code, id, config.mode)
+      const visitor = asset?.definition.visitor?.(config.mode)
+      if (visitor) {
+        return (await transformAsync(code, {
+          filename: id,
+          presets: ['@babel/preset-typescript'],
+          plugins: [() => ({ visitor })],
+        })) as TransformResult
+      }
     },
 
     resolveId(id) {

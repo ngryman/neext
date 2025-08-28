@@ -18,18 +18,6 @@
       "import": "./dist/vite.js",
       "types": "./dist/vite.d.ts"
     },
-    "./vite-dev-background": {
-      "import": "./dist/vite-dev-background.js",
-      "types": "./dist/vite-dev-background.d.ts"
-    },
-    "./vite-dev-portal": {
-      "import": "./dist/vite-dev-portal.js",
-      "types": "./dist/vite-dev-portal.d.ts"
-    },
-    "./vite-dev-content": {
-      "import": "./dist/vite-dev-content.js",
-      "types": "./dist/vite-dev-content.d.ts"
-    },
     "./vite-runtime-background": {
       "import": "./dist/vite-runtime-background.js",
       "types": "./dist/vite-runtime-background.d.ts"

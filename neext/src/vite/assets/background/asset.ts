@@ -1,6 +1,6 @@
 import type { AssetDefinition } from '@/vite/lib/asset'
 import { createFilePattern } from '@/vite/lib/fs'
-import { transform } from './transform'
+import { visitor } from './visitor'
 
 export const background: AssetDefinition = {
   type: 'background',
@@ -17,5 +17,5 @@ export const background: AssetDefinition = {
       content: `import '${baseUrl}/${asset.sourceFile}'`,
     },
   ],
-  transform,
+  visitor,
 }
