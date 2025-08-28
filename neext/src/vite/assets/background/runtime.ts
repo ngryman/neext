@@ -1,3 +1,3 @@
-import { addMessageHandler } from '@/sdk'
+import { addMessageHandler } from 'neext/sdk'
 
 addMessageHandler('neext:get-tab-id', ({ sender }) => sender)

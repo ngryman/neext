@@ -18,17 +18,17 @@
       "import": "./dist/vite.js",
       "types": "./dist/vite.d.ts"
     },
-    "./vite-runtime-background": {
-      "import": "./dist/vite-runtime-background.js",
-      "types": "./dist/vite-runtime-background.d.ts"
+    "./runtime/background": {
+      "import": "./dist/runtime/background.js",
+      "types": "./dist/runtime/background.d.ts"
     },
-    "./vite-runtime-content": {
-      "import": "./dist/vite-runtime-content.js",
-      "types": "./dist/vite-runtime-content.d.ts"
+    "./runtime/content": {
+      "import": "./dist/runtime/content.js",
+      "types": "./dist/runtime/content.d.ts"
     },
-    "./vite-runtime-portal": {
-      "import": "./dist/vite-runtime-portal.js",
-      "types": "./dist/vite-runtime-portal.d.ts"
+    "./runtime/portal": {
+      "import": "./dist/runtime/portal.js",
+      "types": "./dist/runtime/portal.d.ts"
     }
   },
   "dependencies": {

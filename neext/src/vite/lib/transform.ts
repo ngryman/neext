@@ -13,22 +13,18 @@ export function wrapMessageHandler(path: NodePath<t.FunctionDeclaration>) {
   if (!path.parentPath.isExportNamedDeclaration()) return
   if (!path.node.id) return
 
-  const functionExpression = t.functionExpression(
+  const name = t.stringLiteral(path.node.id.name)
+  const fn = t.functionExpression(
     path.node.id,
     path.node.params,
     path.node.body,
     path.node.generator,
     path.node.async,
   )
-
-  const wrappedFunction = t.expressionStatement(
-    t.callExpression(t.identifier('addMessageHandler'), [
-      t.stringLiteral(path.node.id.name),
-      functionExpression,
-    ]),
-  )
-
-  path.parentPath.replaceWith(wrappedFunction)
+  const handler = template.ast`
+    addMessageHandler(${name}, ${fn})
+  `
+  path.parentPath.replaceWithMultiple(handler)
 }
 
 const renderToAnchor = template(`

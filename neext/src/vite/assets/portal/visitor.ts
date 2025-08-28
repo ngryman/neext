@@ -5,7 +5,7 @@ import dev from './dev.ts?raw'
 
 const prelude = template.ast`
   import { addMessageHandler } from 'neext/sdk'
-  import { renderToAnchor } from 'neext/vite-runtime-portal'
+  import { renderToAnchor } from 'neext/runtime/portal'
 `
 
 export const visitor: AssetVisitor = mode => ({

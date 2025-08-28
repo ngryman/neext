@@ -5,7 +5,7 @@ import dev from './dev.ts?raw'
 
 const prelude = template.ast`
   import { addMessageHandler } from 'neext/sdk'
-  import 'neext/vite-runtime-background'
+  import 'neext/runtime/background'
 `
 
 export const visitor: AssetVisitor = mode => ({
