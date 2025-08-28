@@ -1,12 +1,22 @@
+/// <reference path="./runtime.d.ts" />
+
 import { type Component, render } from 'virtual:neext/renderer'
 import { sendMessage } from 'neext/sdk'
 
 window.NEEXT_APP_TAB_ID = await sendMessage('neext:get-tab-id', {})
 
-export function renderToAnchor(component: Component, anchor: string | HTMLElement) {
-  const getContainer = () => (typeof anchor === 'string' ? document.querySelector(anchor) : anchor)
+interface ResolvedConfig {
+  anchor: string
+}
 
-  const container = getContainer()
+const userConfig = typeof config !== 'undefined' ? config : {}
+
+const resolvedConfig: ResolvedConfig = {
+  anchor: userConfig.anchor ?? 'document.body',
+}
+
+export function renderToAnchor(component: Component) {
+  const container = document.querySelector(resolvedConfig.anchor)
   if (container) {
     const root = document.createElement('div')
     root.id = 'neext-portal-root'
@@ -17,7 +27,7 @@ export function renderToAnchor(component: Component, anchor: string | HTMLElemen
   }
 
   const observer = new MutationObserver(() => {
-    const container = getContainer()
+    const container = document.querySelector(resolvedConfig.anchor)
     if (container) {
       const root = document.createElement('div')
       root.id = 'neext-portal-root'
@@ -29,3 +39,5 @@ export function renderToAnchor(component: Component, anchor: string | HTMLElemen
   })
   observer.observe(document.body, { childList: true, subtree: true })
 }
+
+renderToAnchor(PortalComponent)

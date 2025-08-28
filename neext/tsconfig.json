@@ -13,18 +13,6 @@
       "compilerOptions": {
         "types": ["chrome", "vite/client"]
       }
-    },
-    {
-      "files": ["src/vite/**/!(*dev|*runtime).ts"],
-      "compilerOptions": {
-        "types": ["node"]
-      }
-    },
-    {
-      "files": ["src/vite/assets/*/dev.ts", "src/vite/assets/*/runtime.ts"],
-      "compilerOptions": {
-        "types": ["runtime.d.ts"]
-      }
     }
   ]
 }

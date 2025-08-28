@@ -5,12 +5,15 @@ interface Window {
   NEEXT_APP_TAB_ID: number
 }
 
-declare global {
-  const anchor: string | undefined
-}
+declare const config:
+  | {
+      anchor?: string
+    }
+  | undefined
+
+declare const PortalComponent: Component
 
 declare module 'virtual:neext/renderer' {
-  // biome-ignore lint/suspicious/noExplicitAny: let the types flow
-  export type Component = () => any
+  export type Component = () => unknown
   export const render: (component: Component, element: HTMLElement) => void
 }
