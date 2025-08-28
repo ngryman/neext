@@ -1,7 +1,7 @@
 import { type NodePath, template, transformSync } from '@babel/core'
 import * as t from '@babel/types'
 
-export function insertBody(path: NodePath<t.Program>, node: t.Statement | t.Statement[]) {
+export function prependBody(path: NodePath<t.Program>, node: t.Statement | t.Statement[]) {
   path.unshiftContainer('body', node)
 }
 
@@ -27,17 +27,32 @@ export function wrapMessageHandler(path: NodePath<t.FunctionDeclaration>) {
   path.parentPath.replaceWithMultiple(handler)
 }
 
-const renderToAnchor = template(`
-  renderToAnchor(%%component%%, typeof anchor === 'string' ? anchor : document.body)
-`)
-
 export function renderComponent(path: NodePath<t.ExportDefaultDeclaration>) {
   const declaration = path.node.declaration
 
-  if (t.isIdentifier(declaration)) {
-    const statement = renderToAnchor({ component: declaration })
-    path.replaceWithMultiple(statement)
+  // If the declaration is an expression, create a variable declaration
+  if (t.isExpression(declaration)) {
+    const variableDeclaration = t.variableDeclaration('const', [
+      t.variableDeclarator(t.identifier('PortalComponent'), declaration),
+    ])
+    const namedExport = t.exportNamedDeclaration(variableDeclaration)
+    return path.replaceWith(namedExport)
   }
+
+  // If it's already a declaration (like FunctionDeclaration or ClassDeclaration)
+  if (t.isFunctionDeclaration(declaration) || t.isClassDeclaration(declaration)) {
+    // Ensure it has a name
+    if (!declaration.id) {
+      declaration.id = t.identifier('PortalComponent')
+    } else {
+      declaration.id.name = 'PortalComponent'
+    }
+    const namedExport = t.exportNamedDeclaration(declaration)
+    return path.replaceWith(namedExport)
+  }
+
+  // Fallback: just replace with the declaration as before
+  return path.replaceWith(declaration)
 }
 
 export function transpile(code: string, filename: string): t.Statement | t.Statement[] {

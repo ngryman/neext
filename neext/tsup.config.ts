@@ -14,9 +14,6 @@ export default defineConfig({
   entry: {
     sdk: 'src/sdk/index.ts',
     vite: 'src/vite/index.ts',
-    'runtime/background': 'src/vite/assets/background/runtime.ts',
-    'runtime/content': 'src/vite/assets/content/runtime.ts',
-    'runtime/portal': 'src/vite/assets/portal/runtime.ts',
   },
 })
 

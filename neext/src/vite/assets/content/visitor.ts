@@ -1,21 +1,15 @@
-import type { AssetVisitor } from '@/vite/lib/asset'
-import { insertBody, transpile, wrapMessageHandler } from '@/vite/lib/transform'
-import { template } from '@babel/core'
-import dev from './dev.ts?raw'
+import { prependBody, wrapMessageHandler } from '@/vite/lib/transform'
+import { type Visitor, template } from '@babel/core'
 
 const prelude = template.ast`
   import { addMessageHandler } from 'neext/sdk'
-  import 'neext/runtime/content'
 `
 
-export const visitor: AssetVisitor = mode => ({
+export const visitor: Visitor = {
   Program(path) {
-    insertBody(path, prelude)
-    if (mode === 'development') {
-      insertBody(path, transpile(dev, './dev.ts'))
-    }
+    prependBody(path, prelude)
   },
   FunctionDeclaration(path) {
     wrapMessageHandler(path)
   },
-})
+}

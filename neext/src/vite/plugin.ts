@@ -1,14 +1,16 @@
 import { readFile } from 'node:fs/promises'
 import { resolve } from 'node:path'
-import { transformAsync } from '@babel/core'
+import { type NodePath, transformAsync } from '@babel/core'
+import type * as t from '@babel/types'
 import fg from 'fast-glob'
 import { flatMap, map, reduce } from 'lodash-es'
-import type { Plugin, ResolvedConfig, TransformResult } from 'vite'
+import type { Plugin, ResolvedConfig } from 'vite'
 import { definitions } from './assets'
 import { type Asset, createAsset } from './lib/asset'
 import { addEntrypoint } from './lib/config'
 import { emitFile } from './lib/fs'
 import { type ManifestPatch, patchManifest } from './lib/manifest'
+import { appendBody, prependBody, transpile } from './lib/transform'
 
 export function neext(): Plugin {
   const assets: Asset[] = []
@@ -84,13 +86,51 @@ export function neext(): Plugin {
 
     async transform(code, id) {
       const asset = assets.find(asset => id.endsWith(asset.sourceFile))
-      const visitor = asset?.definition.visitor?.(config.mode)
+      if (!asset) return
+
+      let transformedCode = code
+
+      // First pass: Apply asset-specific transforms
+      const visitor = asset?.definition.visitor
       if (visitor) {
-        return (await transformAsync(code, {
+        const result = await transformAsync(transformedCode, {
           filename: id,
           presets: ['@babel/preset-typescript'],
           plugins: [() => ({ visitor })],
-        })) as TransformResult
+        })
+        transformedCode = result?.code ?? transformedCode
+      }
+
+      // Second pass: Inline runtime & dev
+      const dev = asset?.definition.dev
+      const runtime = asset?.definition.runtime
+      if (runtime || dev) {
+        const result = await transformAsync(transformedCode, {
+          filename: id,
+          presets: ['@babel/preset-typescript'],
+          plugins: [
+            () => ({
+              visitor: {
+                Program(path: NodePath<t.Program>) {
+                  if (config.mode === 'development') {
+                    if (dev) {
+                      prependBody(path, transpile(dev, './dev.ts'))
+                    }
+                  }
+                  if (runtime) {
+                    appendBody(path, transpile(runtime, './runtime.ts'))
+                  }
+                },
+              },
+            }),
+          ],
+        })
+        transformedCode = result?.code ?? transformedCode
+      }
+
+      // Return the final result if any transforms were applied
+      if (transformedCode !== code) {
+        return { code: transformedCode }
       }
     },
 

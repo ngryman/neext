@@ -15,9 +15,10 @@ export interface AssetDefinition {
   handleHotUpdate?: (
     ctx: HmrContext,
   ) => Array<ModuleNode> | void | Promise<Array<ModuleNode>> | Promise<void>
-  visitor?: AssetVisitor
+  runtime?: string
+  dev?: string
+  visitor?: Visitor
 }
-export type AssetVisitor = (mode: string) => Visitor
 
 export type Asset = BackgroundAsset | ContentAsset | PageAsset
 export type BackgroundAsset = AssetBase<'background', 'background'>

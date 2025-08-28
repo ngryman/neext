@@ -7,12 +7,14 @@ window.NEEXT_APP_TAB_ID = await sendMessage('neext:get-tab-id', {})
 
 interface ResolvedConfig {
   anchor: string
+  component: Component
 }
 
 const userConfig = typeof config !== 'undefined' ? config : {}
 
 const resolvedConfig: ResolvedConfig = {
   anchor: userConfig.anchor ?? 'document.body',
+  component: PortalComponent,
 }
 
 export function renderToAnchor(component: Component) {
