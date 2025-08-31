@@ -7,14 +7,13 @@ import { getCurrentTarget } from './utils'
 export const { debug, error, info, warn } = createLogger('messaging')
 
 export class Broker {
-  private readonly currentTarget = getCurrentTarget()
   private readonly handlers: Map<string, MessageHandler> = new Map()
   private readonly listeners: Map<string, Set<EventListener>> = new Map()
   private readonly ports: Map<string, chrome.runtime.Port> = new Map()
   private sequenceNext = 1
 
   constructor() {
-    debug('initialize broker', this.currentTarget)
+    debug('initialize broker')
 
     this.registerMessageHandlers()
     this.registerPortListener()
@@ -22,7 +21,7 @@ export class Broker {
     // If the page is restored from a back-forward cache, reconnect the port.
     // This is only necessary for content scripts.
     // https://developer.chrome.com/blog/bfcache-extension-messaging-changes
-    if (isNumber(this.currentTarget)) {
+    if (isNumber(getCurrentTarget())) {
       this.handleBfCache()
     }
   }
@@ -33,7 +32,7 @@ export class Broker {
       type,
       data,
       target,
-      sender: this.currentTarget,
+      sender: getCurrentTarget(),
       time: Date.now(),
     }
 
@@ -54,7 +53,7 @@ export class Broker {
       type,
       data,
       target,
-      sender: this.currentTarget,
+      sender: getCurrentTarget(),
       time: Date.now(),
     }
 
@@ -114,7 +113,7 @@ export class Broker {
     const createHandler =
       (external: boolean) =>
       (message: Message, sender: chrome.runtime.MessageSender, sendResponse: () => void) => {
-        if (message.target !== this.currentTarget) return true
+        if (message.target !== getCurrentTarget()) return true
         if (external && message.sender !== 'external') return true
         if (!external && message.sender === 'external') return true
 
@@ -137,7 +136,7 @@ export class Broker {
   }
 
   private registerPortListener() {
-    const name = this.currentTarget.toString()
+    const name = getCurrentTarget().toString()
 
     const handler = (port: chrome.runtime.Port) => {
       if (port.name !== name) return

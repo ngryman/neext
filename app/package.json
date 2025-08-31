@@ -8,15 +8,19 @@
     "build": "vite build"
   },
   "dependencies": {
+    "@ai-sdk/google": "^2.0.11",
+    "ai": "^5.0.28",
+    "he": "^1.2.0",
     "lodash-es": "^4.17.21",
     "solid-js": "^1.9.4"
   },
   "devDependencies": {
     "@types/chrome": "^0.0.300",
+    "@types/he": "^1.2.3",
     "@types/lodash-es": "^4.17.12",
     "@types/node": "^22.13.0",
+    "neext": "workspace:*",
     "vite": "^6.0.11",
-    "vite-plugin-solid": "^2.11.0",
-    "neext": "workspace:*"
+    "vite-plugin-solid": "^2.11.0"
   }
 }

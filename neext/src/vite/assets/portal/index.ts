@@ -6,7 +6,7 @@ import { visitor } from './visitor'
 
 export const portal: AssetDefinition = {
   type: 'portal',
-  pattern: createFilePattern('portal', { filePattern: '{,/*}' }),
+  pattern: createFilePattern('portal', { filePattern: '{,/*,/*/index}' }),
   manifestPatch: asset => ({
     content_scripts: [
       {

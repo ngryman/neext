@@ -27,6 +27,7 @@ export async function emitFile(outDir: string, emittedFile: EmittedFile): Promis
   const { file, content } = emittedFile
   const { base, dir } = parse(file)
   const destDir = `${outDir}/${dir}`
+  console.log(join(destDir, base))
   await mkdir(destDir, { recursive: true })
   await writeFile(
     join(destDir, base),

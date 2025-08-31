@@ -43,7 +43,6 @@ export function createAsset(definition: AssetDefinition, sourceFile: string): As
   const file = parse(sourceFile)
   const name = getAssetName(file)
   const outputFile = sourceFile.replace(/\.tsx?$/, '.js')
-
   return { type: definition.type, name, sourceFile, outputFile, definition } as Asset
 }
 

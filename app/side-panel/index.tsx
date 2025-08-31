@@ -6,7 +6,9 @@ render(() => {
   const [msg, setMsg] = createSignal('')
 
   const sayHello = async () => {
-    setMsg(await sendMessage('sayHello', {}))
+    // TODO: generate types!!
+    const tab = await chrome.tabs.query({ active: true, currentWindow: true })
+    setMsg(await sendMessage('getTranscript', {}, tab[0].id))
   }
 
   onMount(async () => {
